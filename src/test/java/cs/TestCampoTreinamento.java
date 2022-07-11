@@ -57,6 +57,7 @@ public class TestCampoTreinamento {
 		assertTrue(driver.findElement(By.id("elementosForm:comidaFavorita:2")).isSelected());
 		driver.quit();
 	}
+
 	@Test
 	public void devoInteragirComCombo() {
 		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
@@ -64,31 +65,64 @@ public class TestCampoTreinamento {
 		driver.get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
 		WebElement element = driver.findElement(By.id("elementosForm:escolaridade"));
 		Select combo = new Select(element);
-		//combo.selectByIndex(2);
-		//combo.selectByValue("superior");
+		// combo.selectByIndex(2);
+		// combo.selectByValue("superior");
 		combo.selectByVisibleText("2o grau incompleto");
-		assertEquals("2o grau incompleto", 	combo.getFirstSelectedOption().getText());
-		//driver.quit();
+		assertEquals("2o grau incompleto", combo.getFirstSelectedOption().getText());
+		// driver.quit();
 	}
+
 	@Test
 	public void devoValidarComboMultiplo() {
 		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
 		driver.get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
 		WebElement element = driver.findElement(By.id("elementosForm:esportes"));
-		Select combo  = new Select(element);
+		Select combo = new Select(element);
 		combo.selectByVisibleText("Futebol");
 		combo.selectByVisibleText("Corrida");
 		combo.selectByVisibleText("O que eh esporte?");
-		
-		
+
 		List<WebElement> allSelectOptions = combo.getAllSelectedOptions();
-		assertEquals(3,allSelectOptions.size());
-		
-	
+		assertEquals(3, allSelectOptions.size());
+
 		combo.deselectByVisibleText("Corrida");
 		allSelectOptions = combo.getAllSelectedOptions();
-		assertEquals(2,allSelectOptions.size());
+		assertEquals(2, allSelectOptions.size());
 		driver.quit();
+	}
+
+	@Test
+	public void devoInteragirComBotoes() {
+		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
+		WebElement botao = driver.findElement(By.id("buttonSimple"));
+		botao.click();
+
+		assertEquals("Obrigado!", botao.getAttribute("value"));
+		driver.quit();
+	}
+
+	@Test
+	public void devoInteragirComLink() {
+		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
+		driver.findElement(By.linkText("Voltar")).click();
+		assertEquals("Voltar",driver.findElement(By.linkText("Voltar")).getText());
+		driver.quit();
+		
+	}
+	@Test
+	public void devoBuscarTextoNaPagina() {
+		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
+		//assertTrue(driver.findElement(By.tagName("body")).getText().contains("Campo de Treinamento"));
+		assertEquals("Campo de Treinamento",driver.findElement(By.tagName("h3")).getText());
+		
+		driver.quit();
+
 	}
 }
