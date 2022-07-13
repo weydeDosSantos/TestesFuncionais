@@ -2,7 +2,6 @@ package cs;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
