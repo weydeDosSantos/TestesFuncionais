@@ -1,73 +1,91 @@
 package cs;
 
+import static core.DriverFactory.getDriver;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.Select;
+
+import core.DriverFactory;
 
 public class CamposObrigatorios {
 
-	private WebDriver driver;
-	
+	private CamposObrigatoriosPage page;
+	private DSL dsl;
+
 	@Before
 	public void inicializa() {
-		System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
-		 driver = new ChromeDriver();
-		driver.get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
+		getDriver().get("file:///" + System.getProperty("user.dir") + "/src/main/resources/componentes.html");
+		page = new CamposObrigatoriosPage();
+		dsl = new DSL();
 	}
-	
+
 	@After
 	public void quitar() {
-		driver.quit();
+		DriverFactory.killDriver();
 	}
-	
+
+	@Test
+	public void devoRealizarcadastro() {
+		page.setNome("Wagner");
+		page.setSobreNome("Costa");
+		page.setSexoMasculino();
+		page.setComidaCarne();
+		page.setEscolaridade("Mestrado");
+		page.setEsportes("Futebol");
+		page.cadastrar();
+		
+		assertTrue(page.obterResultadoCadastro().startsWith("Cadastrado!"));
+		assertTrue(page.obterNomeCadastro().endsWith("Wagner"));
+		assertEquals("Sobrenome: Costa",page.obterSobreNomeCadastro());
+		assertEquals("Sexo: Masculino",page.obterSexoCadastro());
+		assertEquals("Comida: Carne",page.obterComidaCadastro());page.obterEscolaridadeCadastro();
+		assertEquals("Esportes: Futebol",page.obterEsporteCadastro());
+	}
+
 	@Test
 	public void nomeObrigatorio() {
 
-		driver.findElement(By.id("elementosForm:cadastrar")).click();
-		Alert alert = driver.switchTo().alert();
-		assertEquals("Nome eh obrigatorio", alert.getText());
+		page.cadastrar(); 
+		Alert alert =getDriver().switchTo().alert();
+		assertEquals("Nome eh obrigatorio",alert.getText());
+	
 
 	}
 
 	@Test
 	public void Sobrenome() {
 
-		driver.findElement(By.id("elementosForm:nome")).sendKeys("ananias");
-		driver.findElement(By.id("elementosForm:cadastrar")).click();
-		Alert alert = driver.switchTo().alert();
+		page.setNome("Cicrano");
+		page.cadastrar();
+		Alert alert =getDriver().switchTo().alert();
 		assertEquals("Sobrenome eh obrigatorio", alert.getText());
 
 	}
 
 	@Test
 	public void CampoSexo() {
-		driver.findElement(By.id("elementosForm:comidaFavorita:0")).click();
-		driver.findElement(By.id("elementosForm:comidaFavorita:3")).click();
 
-		driver.findElement(By.id("elementosForm:nome")).sendKeys("ananias");
-		driver.findElement(By.id("elementosForm:sobrenome")).sendKeys("duarte");
-		driver.findElement(By.id("elementosForm:cadastrar")).click();
-		Alert alert = driver.switchTo().alert();
+		page.setNome("Cicrano");
+		page.setSobreNome("pitagoras");
+		page.cadastrar();
+		Alert alert =getDriver().switchTo().alert();
 		assertEquals("Sexo eh obrigatorio", alert.getText());
 	}
 
 	@Test
 	public void CampoComida() {
 
-		driver.findElement(By.id("elementosForm:nome")).sendKeys("ananias");
-		driver.findElement(By.id("elementosForm:sobrenome")).sendKeys("duarte");
-		driver.findElement(By.id("elementosForm:sexo:0")).click();
-		driver.findElement(By.id("elementosForm:comidaFavorita:0")).click();
-		driver.findElement(By.id("elementosForm:comidaFavorita:3")).click();
-		driver.findElement(By.id("elementosForm:cadastrar")).click();
-		Alert alert = driver.switchTo().alert();
+		page.setNome("Cicrano");
+		page.setSobreNome("pitagoras");
+		page.setSexoMasculino();
+		page.setComidaCarne();
+		page.setComidaVegetariano();
+		page.cadastrar();
+		Alert alert =getDriver().switchTo().alert();
 		assertEquals("Tem certeza que voce eh vegetariano?", alert.getText());
 
 	}
@@ -75,17 +93,15 @@ public class CamposObrigatorios {
 	@Test
 	public void EsportistaIndeciso() {
 
-		driver.findElement(By.id("elementosForm:nome")).sendKeys("ananias");
-		driver.findElement(By.id("elementosForm:sobrenome")).sendKeys("duarte");
-		driver.findElement(By.id("elementosForm:sexo:0")).click();
-		driver.findElement(By.id("elementosForm:comidaFavorita:0")).click();
-		Select combo = new Select(driver.findElement(By.id("elementosForm:esportes")));
-		combo.selectByVisibleText("Karate");
-		combo.selectByVisibleText("O que eh esporte?");
-		
-		driver.findElement(By.id("elementosForm:cadastrar")).click();
-		Alert alert = driver.switchTo().alert();
+		page.setNome("Cicrano");
+		page.setSobreNome("pitagoras");
+		page.setSexoMasculino();
+		page.setComidaCarne();
+		page.setEsportes("Karate","O que eh esporte?");
+
+		dsl.clicarBotao("elementosForm:cadastrar");
+		Alert alert = getDriver().switchTo().alert();
 		assertEquals("Voce faz esporte ou nao?", alert.getText());
-		}
+	}
 
 }
